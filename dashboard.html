@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Dashboard</title>
+  <script>
+    window.Chart = { noSourceMaps: true };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark-green: #0a191f;
+      --bg-card: rgba(16, 37, 44, 0.75);
+      --gold-primary: #D4AF37;
+      --gold-secondary: #E0C56E;
+      --text-light: #e0e0e0;
+      --text-dark: #a0b3bd;
+      --border-color: rgba(212, 175, 55, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      color: var(--text-light);
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #071318, #0a191f, #0d2a24, #10252c);
+      background-size: 400% 400%;
+      animation: animateGradient 20s ease infinite;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    /* --- SMOOTH PAGE TRANSITION --- */
+    @keyframes pageFadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; transform: scale(0.98); }
+    }
+
+    body.fade-out {
+        animation: pageFadeOut 0.5s forwards ease-in-out;
+    }
+
+    @keyframes animateGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #flow-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 25px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* --- HEADER AND NAVIGATION STYLES --- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    h1 {
+      color: var(--gold-primary);
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .main-nav {
+        display: flex;
+        gap: 25px;
+    }
+
+    .main-nav a {
+        color: var(--text-dark);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: color 0.3s ease, border-bottom-color 0.3s ease;
+        padding-bottom: 5px;
+        border-bottom: 2px solid transparent;
+    }
+
+    .main-nav a:hover,
+    .main-nav a.active {
+        color: var(--gold-primary);
+        border-bottom-color: var(--gold-primary);
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .logout-btn {
+      background: transparent;
+      color: var(--gold-primary);
+      border: 1px solid var(--gold-primary);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-left: 30px;
+    }
+
+    .logout-btn:hover {
+      background: var(--gold-primary);
+      color: var(--bg-dark-green);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    }
+
+    /* --- CARD AND OTHER STYLES --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 25px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 25px;
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--gold-secondary);
+    }
+
+    .stats-container {
+      grid-column: span 12;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: rgba(10, 25, 31, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        background-color: rgba(10, 25, 31, 1);
+        transform: scale(1.03);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin: 10px 0;
+    }
+
+    .stat-label {
+      color: var(--text-dark);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    .trend-chart-container {
+      grid-column: span 8;
+      height: 350px;
+    }
+
+    .subject-chart-container {
+        grid-column: span 4;
+        height: 350px;
+    }
+
+    .recent-results {
+      grid-column: span 12;
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .results-table th, .results-table td {
+      padding: 14px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .results-table th {
+      background-color: rgba(16, 37, 44, 0.8);
+      font-weight: 500;
+      color: var(--gold-secondary);
+    }
+    
+    .results-table tr {
+        transition: background-color 0.3s;
+    }
+
+    .results-table tr:hover {
+      background-color: #142f38;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      border: 1px solid;
+    }
+
+    .score-high {
+      border-color: #2ecc71;
+      color: #2ecc71;
+    }
+
+    .score-medium {
+      border-color: #f39c12;
+      color: #f39c12;
+    }
+
+    .score-low {
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    @media (max-width: 1200px) {
+      .trend-chart-container {
+        grid-column: span 12;
+      }
+      .subject-chart-container {
+        grid-column: span 12;
+        margin-top: 25px;
+      }
+      .main-nav {
+          display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      h1 {
+          font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="flow-canvas"></canvas>
+
+  <div class="container">
+    <header>
+      <h1>Dashboard</h1>
+      
+      <div class="header-right">
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="#quiz">New Quiz</a>
+          <a href="category.html">Category</a>
+          <a href="plan.html">Plans</a>
+          <a href="#about">About</a>
+          <a href="dashboard.html" class="active">Profile</a>
+        </nav>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+    
+    <div class="dashboard-grid">
+      <div class="card stats-container">
+        <div class="card-header">
+          <h2 class="card-title">Performance Overview</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Quizzes Taken</div>
+            <div class="stat-value" id="quizzesTaken">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Average Score</div>
+            <div class="stat-value" id="averageScore">0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Highest Score</div>
+            <div class="stat-value" id="highestScore">0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Improvement Trend</div>
+            <div class="stat-value" id="improvement">+0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card trend-chart-container">
+        <div class="card-header">
+          <h2 class="card-title">Score Trend</h2>
+        </div>
+        <canvas id="performanceChart"></canvas>
+      </div>
+
+      <div class="card subject-chart-container">
+        <div class="card-header">
+            <h2 class="card-title">Subject Breakdown</h2>
+        </div>
+        <canvas id="subjectDoughnutChart"></canvas>
+      </div>
+
+      <div class="card recent-results">
+        <div class="card-header">
+          <h2 class="card-title">Recent Quiz Results</h2>
+        </div>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Date</th>
+              <th>Score</th>
+              <th>Percentage</th>
+            </tr>
+          </thead>
+          <tbody id="recentResults">
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('flow-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, particles;
+
+    function setup() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        particles = [];
+        const particleCount = 100;
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+    }
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 1.5 + 0.5;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(212, 175, 55, 0.7)';
+            ctx.fill();
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.05)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+                if (dist < 150) {
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                }
+            }
+        }
+        ctx.stroke();
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', setup);
+    setup();
+    animate();
+  </script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaNgmMCx0hP1yH2L2fdNEmbtWkWP-OfA",
+      authDomain: "login-sysytem-b86b6.firebaseapp.com",
+      projectId: "login-sysytem-b86b6",
+      storageBucket: "login-sysytem-b86b6.firebasestorage.app",
+      messagingSenderId: "792465172616",
+      appId: "1:792465172616:web:635d75a49b7559eb0a973d",
+      measurementId: "G-FL3L6NH1W0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // --- SMOOTH PAGE TRANSITION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const navLinks = document.querySelectorAll('.main-nav a');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const destination = this.href;
+
+                // Don't fade if it's not a real page change (e.g., hash link)
+                // or if it's a link to the current page
+                if (!destination || destination === window.location.href || destination.includes('#')) {
+                    return;
+                }
+
+                e.preventDefault();
+                document.body.classList.add('fade-out');
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 500);
+            });
+        });
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.href = './index.html';
+        }, 500);
+      }).catch((error) => {
+        console.error('Logout error:', error);
+        alert('Failed to logout. Please try again.');
+      });
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchResults(user.uid);
+      } else {
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.href = './index.html';
+        }, 500);
+      }
+    });
+
+    async function fetchResults(userId) {
+      const resultsRef = collection(db, "users", userId, "results");
+      const q = query(resultsRef, orderBy("timestamp", "desc"));
+      
+      try {
+        const querySnapshot = await getDocs(q);
+        const results = [];
+        querySnapshot.forEach(doc => {
+          results.push(doc.data());
+        });
+        if (results.length === 0) {
+          showNoDataMessage();
+          return;
+        }
+        displayResults(results);
+        calculateStats(results);
+        renderCharts(results);
+      } catch (error) {
+        console.error("Error fetching results:", error);
+      }
+    }
+
+    function showNoDataMessage() {
+      document.querySelector('.dashboard-grid').innerHTML = `
+        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+          <h2>No Quiz Data Available</h2>
+          <p>You haven't taken any quizzes yet. Your dashboard will populate once you complete some quizzes.</p>
+        </div>
+      `;
+    }
+
+    function displayResults(results) {
+      const recentResultsContainer = document.getElementById('recentResults');
+      recentResultsContainer.innerHTML = '';
+      const recent = results.slice(0, 5);
+      recent.forEach(result => {
+        const row = document.createElement('tr');
+        const percentage = result.percentage ?? Math.round((result.score / result.total) * 100);
+        const scoreClass = percentage >= 70 ? 'score-high' : 
+                           percentage >= 40 ? 'score-medium' : 'score-low';
+        const date = result.timestamp?.toDate ? result.timestamp.toDate() : new Date(result.timestamp);
+        row.innerHTML = `
+          <td>${result.subject || 'Unknown'}</td>
+          <td>${date.toLocaleDateString()}</td>
+          <td>${result.score ?? 0}/${result.total ?? 1}</td>
+          <td><span class="score-badge ${scoreClass}">${percentage ?? 0}%</span></td>
+        `;
+        recentResultsContainer.appendChild(row);
+      });
+    }
+
+    function calculateStats(results) {
+      if (results.length === 0) return;
+      const percentages = results.map(r => r.percentage ?? Math.round(r.score / r.total) * 100);
+      document.getElementById('quizzesTaken').textContent = results.length;
+      const totalPercentage = percentages.reduce((sum, p) => sum + p, 0);
+      const average = Math.round(totalPercentage / results.length);
+      document.getElementById('averageScore').textContent = `${average}%`;
+      const highest = Math.max(...percentages);
+      document.getElementById('highestScore').textContent = `${highest}%`;
+      if (results.length > 1) {
+        const first = percentages[results.length - 1];
+        const last = percentages[0];
+        const improvement = last - first;
+        const improvementElement = document.getElementById('improvement');
+        improvementElement.textContent = `${improvement >= 0 ? '+' : ''}${improvement}%`;
+        improvementElement.style.color = improvement >= 0 ? '#2ecc71' : '#e74c3c';
+      }
+    }
+
+    function renderCharts(results) {
+      const chartDefaults = {
+          plugins: {
+              legend: { labels: { color: 'var(--text-light)' } }
+          },
+          scales: { 
+              y: { 
+                  ticks: { color: 'var(--text-dark)' },
+                  grid: { color: 'var(--border-color)' }
+              },
+              x: {
+                  ticks: { color: 'var(--text-dark)' },
+                  grid: { color: 'var(--border-color)' }
+              }
+          }
+      };
+
+      const chartData = results.slice(0, 10).reverse();
+      const chartPercentages = chartData.map(r => r.percentage ?? Math.round((r.score / r.total) * 100));
+      const lineCtx = document.getElementById('performanceChart').getContext('2d');
+      if (window.myPerformanceChart) window.myPerformanceChart.destroy();
+      window.myPerformanceChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: chartData.map((r, i) => `Quiz ${results.length - i}`),
+          datasets: [{
+            label: 'Quiz Scores',
+            data: chartPercentages,
+            backgroundColor: 'rgba(212, 175, 55, 0.2)',
+            borderColor: 'rgba(212, 175, 55, 1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: 'rgba(212, 175, 55, 1)',
+            pointBorderColor: '#fff',
+            pointHoverRadius: 7,
+            pointRadius: 5
+          }]
+        },
+        options: { ...chartDefaults, scales: { y: { ...chartDefaults.scales.y, beginAtZero: true, max: 100 }, x: chartDefaults.scales.x } }
+      });
+
+      const subjectMap = {};
+      results.forEach(result => {
+        const subject = result.subject || 'Unknown';
+        if (!subjectMap[subject]) {
+          subjectMap[subject] = { total: 0, count: 0 };
+        }
+        subjectMap[subject].total += result.percentage ?? Math.round((result.score / result.total) * 100);
+        subjectMap[subject].count++;
+      });
+      const subjectAverages = Object.entries(subjectMap).map(([subject, data]) => ({
+          subject,
+          average: Math.round(data.total / data.count)
+      }));
+      const doughnutCtx = document.getElementById('subjectDoughnutChart').getContext('2d');
+      if(window.myDoughnutChart) window.myDoughnutChart.destroy();
+      window.myDoughnutChart = new Chart(doughnutCtx, {
+          type: 'doughnut',
+          data: {
+              labels: subjectAverages.map(s => s.subject),
+              datasets: [{
+                  label: 'Average Score',
+                  data: subjectAverages.map(s => s.average),
+                  backgroundColor: [
+                      '#D4AF37', '#C2B280', '#BDB76B', '#F0E68C', 
+                      '#EEE8AA', '#FAFAD2', '#FFD700', '#DAA520'
+                  ],
+                  borderColor: 'var(--bg-card)',
+                  borderWidth: 3,
+                  hoverOffset: 4
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'top', labels: { color: 'var(--text-light)' } } }
+          }
+      });
+    }
+  </script>
+</body>
+</html>

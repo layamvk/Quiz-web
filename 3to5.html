@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>3–5 Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at center, #0d1b2a, #000);
+      color: white;
+      padding: 20px;
+      transition: background 0.5s ease;
+      min-height: 100vh;
+    }
+
+    .nav-icons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-icon {
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .nav-icon:hover {
+      transform: scale(1.2);
+      color: #00c896;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      animation: fadeInDown 0.6s ease;
+    }
+
+    .subject-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      max-width: 1000px;
+      margin: 50px auto;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .subject-card {
+      border-radius: 15px;
+      padding: 20px;
+      width: 220px;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .subject-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));
+    }
+
+    .subject-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subject-description {
+      font-weight: 500;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    .subject-button {
+      margin-top: auto;
+      padding: 10px 16px;
+      background: linear-gradient(to right, #00c896, #00a8ff);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .subject-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,200,150,0.4);
+    }
+
+    .quiz-box {
+      background: rgba(0, 10, 30, 0.9);
+      color: #ffffff;
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+      display: none;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      animation: fadeInUp 0.6s ease;
+    }
+
+    #timer {
+      font-weight: bold;
+      color: #ff6b6b;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    #progressBarContainer {
+      width: 100%;
+      background-color: rgba(255,255,255,0.1);
+      height: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+      border-radius: 5px;
+    }
+
+    .question-area {
+      animation: fadeIn 0.5s ease;
+    }
+
+    .question-area p {
+      font-size: 1.2rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .options label {
+      display: block;
+      margin: 15px 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 12px 15px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .options label:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(5px);
+    }
+
+    .options input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #00c896;
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: linear-gradient(45deg, #42e695, #3bb2b8);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      flex: 1;
+    }
+
+    .btn:hover {
+      background: linear-gradient(45deg, #2fa4a4, #3ed0d0);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,200,150,0.4);
+    }
+
+    #score {
+      text-align: center;
+      color: #4CAF50;
+      font-size: 1.3rem;
+      margin-top: 20px;
+      font-weight: bold;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      animation: pulse 1.5s infinite;
+    }
+
+    #stars {
+      text-align: center;
+      font-size: 2rem;
+      margin: 20px 0;
+    }
+
+    .star {
+      display: inline-block;
+      animation: pop 0.4s cubic-bezier(0.5, 1.5, 0.5, 1.5) both;
+    }
+
+    .dashboard-btn {
+      display: block;
+      margin: 30px auto 0;
+      padding: 12px 24px;
+      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    .dashboard-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(106,17,203,0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); opacity: 0; }
+      80% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-icons">
+    <i class="nav-icon fas fa-home" onclick="window.location.href='index.html'"></i>
+    <i class="nav-icon fas fa-tachometer-alt" onclick="window.location.href='dashboard.html'"></i>
+  </div>
+
+  <h2>Select a Subject</h2>
+  <div class="subject-grid">
+    <div class="subject-card" onclick="startQuiz('Animals')">
+      <div class="subject-title">Animals</div>
+      <div class="subject-description">
+        Learn to identify pets, wild animals, and more.  
+        Discover fun facts about creatures big and small.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Colors')">
+      <div class="subject-title">Colors</div>
+      <div class="subject-description">
+        Recognize primary and secondary colors.  
+        Build early color recognition skills with fun.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Fruits')">
+      <div class="subject-title">Fruits</div>
+      <div class="subject-description">
+        Explore tasty fruits like apples and bananas.  
+        Learn names and shapes of juicy treats.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Numbers (1–10)')">
+      <div class="subject-title">Numbers (1–10)</div>
+      <div class="subject-description">
+        Count from one to ten with ease.  
+        Build strong number foundations for kids.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Shapes')">
+      <div class="subject-title">Shapes</div>
+      <div class="subject-description">
+        Discover squares, circles, and triangles.  
+        Make shape learning fun with interactive questions.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Vegetables')">
+      <div class="subject-title">Vegetables</div>
+      <div class="subject-description">
+        Learn names of vegetables like carrots and peas.  
+        Encourage healthy eating and identification.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Vehicles')">
+      <div class="subject-title">Vehicles</div>
+      <div class="subject-description">
+        Know about cars, buses, planes and more.  
+        Fun way to identify transport types easily.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <h2 id="subjectTitle">3–5 Quiz</h2>
+    <p id="timer"></p>
+    <div id="progressBarContainer"><div id="progressBar"></div></div>
+
+    <div class="question-area">
+      <p id="question"></p>
+      <div class="options">
+        <label><input type="radio" name="option" value="A"> <span id="optA"></span></label>
+        <label><input type="radio" name="option" value="B"> <span id="optB"></span></label>
+        <label><input type="radio" name="option" value="C"> <span id="optC"></span></label>
+        <label><input type="radio" name="option" value="D"> <span id="optD"></span></label>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button class="btn" onclick="submitAnswer()">Next</button>
+      <button class="btn" onclick="goBack()">Back</button>
+    </div>
+    <p id="score"></p>
+    <div id="stars"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaNgmMCx0hP1yH2L2fdNEmbtWkWP-OfA",
+      authDomain: "login-sysytem-b86b6.firebaseapp.com",
+      projectId: "login-sysytem-b86b6",
+      storageBucket: "login-sysytem-b86b6.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const backgroundImages = {
+      'selection': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Animals': 'https://images.unsplash.com/photo-1456926631375-92c8ce872def?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Colors': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Fruits': 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Numbers (1–10)': 'https://images.unsplash.com/photo-1542393545-10f5cde2c810?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Shapes': 'https://images.unsplash.com/photo-1513366208864-87536b8bd7b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Vegetables': 'https://images.unsplash.com/photo-1447175008436-054170c2e979?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Vehicles': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'
+    };
+
+    document.body.style.background = `url('${backgroundImages['selection']}') no-repeat center center fixed`;
+    document.body.style.backgroundSize = 'cover';
+
+    const correctSound = new Audio("correct.mp3");
+    const wrongSound = new Audio("wrong.mp3");
+
+    let questions = [], currentIndex = 0, score = 0, timer, timeLeft = 300;
+
+    window.startQuiz = async function(subject) {
+      questions = [], currentIndex = 0, score = 0, timeLeft = 300;
+
+      document.body.style.background = `url('${backgroundImages[subject]}') no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+
+      document.querySelector(".quiz-box").style.display = "block";
+      document.querySelector(".subject-grid").style.display = "none";
+      document.getElementById("subjectTitle").innerText = `3–5 Quiz: ${subject}`;
+      document.getElementById("score").innerText = '';
+      document.getElementById("progressBar").style.width = '0%';
+      document.getElementById("stars").innerHTML = '';
+
+      const quizRef = collection(db, "quizzes", "3to5", "subjects", subject, "questions");
+      const snapshot = await getDocs(quizRef);
+      snapshot.forEach(doc => questions.push(doc.data()));
+
+      displayQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      const el = document.getElementById("timer");
+      el.innerText = "Time Left: 5:00";
+      timer = setInterval(() => {
+        const min = Math.floor(timeLeft / 60), sec = timeLeft % 60;
+        el.innerText = `Time Left: ${min}:${sec < 10 ? '0' + sec : sec}`;
+        if (--timeLeft < 0) {
+          clearInterval(timer);
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function displayQuestion() {
+      if (currentIndex >= questions.length) return endQuiz();
+      const q = questions[currentIndex];
+      document.getElementById("question").innerText = q.question;
+      document.getElementById("optA").innerText = q.optionA;
+      document.getElementById("optB").innerText = q.optionB;
+      document.getElementById("optC").innerText = q.optionC;
+      document.getElementById("optD").innerText = q.optionD;
+      document.getElementById("progressBar").style.width = `${(currentIndex / questions.length) * 100}%`;
+    }
+
+    window.submitAnswer = function() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (!selected) return alert("Please select an answer!");
+      if (selected.value === questions[currentIndex].answer) {
+        score++;
+        correctSound.play();
+      } else {
+        wrongSound.play();
+      }
+      currentIndex++;
+      selected.checked = false;
+      displayQuestion();
+    }
+
+    async function endQuiz() {
+      clearInterval(timer);
+      document.querySelector(".question-area").innerHTML = `
+        <h3 style="text-align:center;animation:fadeIn 0.6s ease">🎉 Quiz Completed! 🎉</h3>
+        <p style="text-align:center">You answered ${score} out of ${questions.length} questions correctly</p>
+      `;
+      document.getElementById("score").innerText = `Score: ${Math.round((score / questions.length) * 100)}%`;
+      document.querySelector(".btn-container").style.display = "none";
+      document.getElementById("progressBar").style.width = "100%";
+
+      const stars = document.getElementById("stars");
+      stars.innerHTML = "";
+      const starCount = Math.ceil((score / questions.length) * 5);
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = "⭐";
+        star.style.animationDelay = `${i * 0.2}s`;
+        stars.appendChild(star);
+      }
+
+      const dashboardBtn = document.createElement("button");
+      dashboardBtn.className = "dashboard-btn";
+      dashboardBtn.innerHTML = '<i class="fas fa-tachometer-alt"></i> Go to Dashboard';
+      dashboardBtn.onclick = () => window.location.href = "dashboard.html";
+      stars.appendChild(dashboardBtn);
+
+      const subject = document.getElementById("subjectTitle").innerText.split(": ")[1];
+      const resultRef = collection(db, "quizzes", "3to5", "results");
+      await addDoc(resultRef, {
+        subject: subject,
+        score: score,
+        total: questions.length,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    window.goBack = function() {
+      clearInterval(timer);
+      document.body.style.background = `url('${backgroundImages['selection']}') no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+      
+      document.querySelector(".quiz-box").style.display = "none";
+      document.querySelector(".subject-grid").style.display = "flex";
+      document.querySelector(".btn-container").style.display = "flex";
+      document.getElementById("score").innerText = "";
+      document.getElementById("timer").innerText = "";
+      document.getElementById("progressBar").style.width = "0%";
+
+      document.querySelector(".question-area").innerHTML = `
+        <p id="question"></p>
+        <div class="options">
+          <label><input type="radio" name="option" value="A"> <span id="optA"></span></label>
+          <label><input type="radio" name="option" value="B"> <span id="optB"></span></label>
+          <label><input type="radio" name="option" value="C"> <span id="optC"></span></label>
+          <label><input type="radio" name="option" value="D"> <span id="optD"></span></label>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

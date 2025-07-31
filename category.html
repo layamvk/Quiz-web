@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Categories</title>
+  <link rel="stylesheet" href="category.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="index.html#quiz">NewQuizz</a>
+    <a href="category.html" class="active">Category</a>
+    <a href="plan.html">Plans</a>
+    <a href="index.html#about">About</a>
+    <a href="dashboard.html">Profile</a>
+  </div>
+
+  <nav class="side-nav">
+    <div class="nav-title">
+      <h2>Quiz World</h2>
+      <p>Explore Knowledge</p>
+    </div>
+    <a href="#section1" class="nav-btn">
+      <span>AGE 3-5</span>
+    </a>
+    <a href="#section2" class="nav-btn">
+      <span>AGE 6-12</span>
+    </a>
+    <a href="#section3" class="nav-btn">
+      <span>AGE 13-18</span>
+    </a>
+  </nav>
+
+  <div class="snap-container">
+    <section id="section1" class="snap-section bg-section section1 active">
+      <div class="content">
+        <h1>AGE GROUP (3-5)</h1>
+        <p>Simple and fun quizzes for young kids.</p>
+        <a href="#" class="btn start-btn" data-section="section1">START NOW</a>
+      </div>
+    </section>
+
+    <section id="section2" class="snap-section bg-section section2">
+      <div class="content">
+        <h1>AGE GROUP (6-12)</h1>
+        <p>Exciting quizzes for school-age children.</p>
+        <a href="#" class="btn start-btn" data-section="section2">START NOW</a>
+      </div>
+    </section>
+
+    <section id="section3" class="snap-section bg-section section3">
+      <div class="content">
+        <h1>AGE GROUP (13-18)</h1>
+        <p>Challenging quizzes for teenagers.</p>
+        <a href="#" class="btn start-btn" data-section="section3">START NOW</a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaNgmMCx0hP1yH2L2fdNEmbtWkWP-OfA",
+      authDomain: "login-sysytem-b86b6.firebaseapp.com",
+      projectId: "login-sysytem-b86b6",
+      storageBucket: "login-sysytem-b86b6.firebasestorage.app",
+      messagingSenderId: "792465172616",
+      appId: "1:792465172616:web:635d75a49b7559eb0a973d",
+      measurementId: "G-FL3L6NH1W0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const sectionToPage = {
+      "section1": "3to5.html",
+      "section2": "6to12.html",
+      "section3": "13to18.html"
+    };
+
+    document.querySelectorAll('.start-btn').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const sectionId = this.getAttribute('data-section');
+        const targetPage = sectionToPage[sectionId] || "login.html";
+
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            window.location.href = targetPage;
+          } else {
+            window.location.href = "login.html";
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

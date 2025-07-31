@@ -1,0 +1,113 @@
+<html>
+    <head>
+         <link rel="icon" type="assests\images\batman.png" href="logo.png">
+         <title>Quiz Plans</title>
+         <link rel="stylesheet" href="plan.css">
+    </head>
+    <body>
+        <div class="navbar">
+            
+            <a href="index.html">Home</a>
+            <a href="#quiz">NewQuizz</a>
+            <a href="category.html">Category</a>
+            <a href="#plans" class="active" >Plans</a>
+            <a href="index.html#about">About</a>
+            <a href="dashboard.html">Profile</a>
+
+        </div>
+         <div class="container">
+               <img src="assests/images/darkgreenplan.jpg" alt="Background Image"  class="bgimage"/>
+                </div>
+                <div class="grid-container">
+
+        <a href="your-link.html" class="card-link">
+        <div class="card-container">
+            <div class="card">
+                <div class="thumb" style="background-image: url(assests/Plans/free.jpg)"></div>
+                <h2>Basic</h2>
+                <span>⛧</span>
+            </div>
+        </div></a>
+
+        <a href="your-link.html" class="card-link">
+        <div class="card-container">
+            <div class="card">
+                <div class="thumb" style="background-image: url(assests/Plans/silver.png)"></div>
+                <h2>Silver</h2>
+                <span>𒅒𒇫𒄆</span>
+            </div>
+        </div></a>
+
+        <a href="your-link.html" class="card-link">
+        <div class="card-container">
+            <div class="card">
+                <div class="thumb" style="background-image: url(assests/Plans/gold.jpg)"></div>
+                <h2>Gold</h2>
+                <span>𓍯𓂃𓂃𓂃</span>
+            </div>
+        </div></a>
+        
+        <a href="your-link.html" class="card-link">
+        <div class="card-container">
+            <div class="card">
+                <div class="thumb" style="background-image: url(assests/Plans/platinum.jpg)"></div>
+                <h2>Platinum</h2>
+                <span>ılıılıılıılıılıılı</span>
+            </div>
+        </div></a>
+
+        <a href="your-link.html" class="card-link">
+        <div class="card-container">
+            <div class="card">
+                <div class="thumb" style="background-image: url(assests/Plans/diamond.png)"></div>
+                <h2>Diamond</h2>
+                <span>⫘⫘⫘</span>
+            </div>
+        </div></a>
+
+        <a href="your-link.html" class="card-link">
+        <div class="card-container">
+            <div class="card">
+                <div class="thumb" style="background-image: url(assests/Plans/premium.png)"></div>
+                <h2>PREMIUM</h2>
+                <span>═══════</span>
+            </div>
+        </div>
+    </div></a>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+    $(".card-container").each(function() {
+        const container = $(this);
+        const card = container.find(".card");
+        
+        container.on("mousemove", function(e) {
+            const x = e.pageX - container.offset().left;
+            const y = e.pageY - container.offset().top;
+            
+            const centerX = container.width() / 2;
+            const centerY = container.height() / 2;
+            
+            const rotateY = (x - centerX) / 20;
+            const rotateX = (centerY - y) / 20;
+            
+            card.css({
+                "transform": `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`,
+                "transition": "none"
+            });
+        });
+        
+        container.on("mouseleave", function() {
+            card.css({
+                "transform": "rotateY(0deg) rotateX(0deg)",
+                "transition": "transform 0.5s ease"
+            });
+        });
+    });
+});
+    </script>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,140 @@
+<html>
+    <head>
+         <link rel="icon" type="assests\images\batman.png" href="logo.png">
+         <title>Quiz WebPage</title>
+         <link rel="stylesheet" href="homepage1.css">
+    </head>
+    <body>
+        <div class="navbar">
+    <div class="nav-links">
+        <a href="#home" class="active">Home</a>
+        <a href="#quiz">NewQuizz</a>
+        <a href="category.html">Category</a>
+        <a href="plan.html">Plans</a>
+        <a href="#about">About</a>
+        <a href="dashboard.html">Profile</a>
+        &ensp;&ensp;&ensp;&ensp;
+    </div>
+</div>
+        <div class="homepage"></div>
+            <div class="iconbox">
+                <a href="login.html">
+                  <img src="assests/images/getstartedhover.png" alt="Icon" class="icon" />
+                </a>
+                <a href="login.html">
+                  <img src="assests/images/login1hover.png" alt="Icon1" class="icon1" />
+                </a>
+            </div>
+            
+        <div class="homepage2">
+              <a href="category.html">
+                <img src="assests/images/Subject/agecategory/Young Scholars.jpg" alt="Young Scholars" class="overlay-image1">
+              </a>
+              <a href="category.html">
+                <img src="assests/images/Subject/agecategory/Junior Academy.jpg" alt="Junior Academy" class="overlay-image2">
+              </a>
+              <a href="category.html">
+                <img src="assests/images/Subject/agecategory/Scholars Program.jpg" alt="Scholars Program" class="overlay-image3">
+              </a>
+              <a href="category.html">
+                <img src="assests/images/starttrail.jpg" alt="Start Trail" class="overlay-image4">
+              </a>
+        </div>
+
+                <div class="parallax-wrapper" id="quiz">
+        <video autoplay muted loop playsinline class="parallax-video">
+          <source src="assests/images/Homepage2hover.mp4" type="video/mp4">
+        </video>
+        <div class="dark-overlay"></div>
+        <div class="dark-overlay1"></div>
+
+        <div class="grid">
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/art.jpg" alt="Art" class="popup-image" onclick="openPopup('Art')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/biology.jpg" alt="Biology" class="popup-image" onclick="openPopup('Biology')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/chemistry.jpg" alt="Chemistry" class="popup-image" onclick="openPopup('Chemistry')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/computerscience.jpg" alt="Computer Science" class="popup-image" onclick="openPopup('ComputerScience')"/></div></div>
+
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/geography.jpg" alt="Geography" class="popup-image" onclick="openPopup('Geography')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/history.jpg" alt="History" class="popup-image" onclick="openPopup('History')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/languages.jpg" alt="Languages" class="popup-image" onclick="openPopup('Languages')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/literature.jpg" alt="Literature" class="popup-image" onclick="openPopup('Literature')"/></div></div>
+
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/mathematics.jpg" alt="Mathematics" class="popup-image" onclick="openPopup('Mathematics')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/music.jpg" alt="Music" class="popup-image" onclick="openPopup('Music')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/physics.jpg" alt="Physics" class="popup-image" onclick="openPopup('Physics')"/></div></div>
+          <div class="image-box"><div class="image-inner"><img src="assests/images/Subject/science.jpg" alt="Science" class="popup-image" onclick="openPopup('Science')"/></div></div>
+        </div>
+      </div>
+
+      <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-content">
+          <span class="close-btn" onclick="closePopup()">&times;</span>
+          <h2 id="popupTitle">Quiz Subject</h2>
+           <ul style="text-align:left;">
+              <li>Read each question carefully.</li>
+              <li>Select the correct answer from the options.</li>
+              <li>You can skip and come back if unsure.</li>
+              <li>Click “Submit” when done.</li>
+              <li>Your score will be shown instantly!</li>
+          </ul>
+          <a id="startQuizLink" href="#" class="start-btn">Start Quiz</a>
+        </div>
+      </div>
+      <script>
+        function openPopup(subject) {
+          document.getElementById('popupOverlay').style.display = 'flex';
+          document.getElementById('popupTitle').innerText = subject + ' Quiz';
+          document.getElementById('startQuizLink').href = 'quizpage.html?subject=' + subject.toLowerCase();
+        }
+
+        function closePopup() {
+          document.getElementById('popupOverlay').style.display = 'none';
+        }
+
+        document.getElementById('popupOverlay').addEventListener('click', function(e) {
+          if (e.target === this) {
+            closePopup();
+          }
+        });
+      </script>
+
+
+        <div class="homepage3"></div>
+<div class="footer" id="about">
+  <div class="footer-container">
+
+    <div class="footer-column">
+      <h3>EliteQuizz</h3>
+      <p>EliteQuizz is your ultimate quiz destination, offering engaging quizzes across various subjects and age groups. Learn, compete, and grow with us!</p>
+    </div>
+
+    <div class="footer-column">
+      <h3>Help</h3>
+      <ul>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">How It Works</a></li>
+        <li><a href="#">Terms & Conditions</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Contact Support</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3>Follow Us</h3>
+      <ul>
+        <li><a href="#">Facebook – @EliteQuizz</a></li>
+        <li><a href="#">Instagram – @elitequizz.official</a></li>
+        <li><a href="#">Twitter – @EliteQuizzHQ</a></li>
+        <li><a href="#">LinkedIn – EliteQuizz Pvt. Ltd.</a></li>
+        <li><a href="#">YouTube – EliteQuizz Channel</a></li>
+      </ul>
+    </div>
+    <div>
+      <img src="assests/images/jayasree.png" alt="footer-column" height="50px" width="auto">
+    </div>
+
+  </div>
+</div>
+    </body>
+</html>
+

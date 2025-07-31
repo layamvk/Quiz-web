@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>High School Quiz (13-18)</title>
+  <style>
+    :root {
+      --primary: #3498db;
+      --secondary: #2ecc71;
+      --dark: #2c3e50;
+      --light: #ecf0f1;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+    }
+    
+    * {
+      box-sizing: border-box;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 1;
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    #subjectBg {
+      background-image: url('assests/images/13to18/subject bg.jpg');
+      filter: brightness(0.7);
+    }
+
+    #quizBg {
+      background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+      filter: brightness(0.6);
+      z-index: -1;
+      opacity: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      font-weight: 700;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: -750px;
+      transform: translateY(0);
+      opacity: 1;
+      transition: all 0.8s ease;
+    }
+
+    .subject-grid.hidden {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    .subject-card {
+      background: rgb(94 36 36 / 20%);
+;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 55px;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transform: translateY(0);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .subject-card:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      background: rgba(82, 0, 0, 0.25);
+    }
+
+    .subject-icon {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      border: 2px solid rgba(255,255,255,0.4);
+    }
+
+    .subject-title {
+      font-weight: 700;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subject-description {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .start-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+      transition: all 0.3s;
+    }
+
+    .start-btn:hover {
+      background: #4d0202d8;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    }
+
+    .quiz-box {
+      background: rgba(255, 255, 255, 0.281);
+      border-radius: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+      display: none;
+      color: #333;
+      transform: scale(0.95);
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .quiz-box.visible {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    #timer {
+      background: var(--dark);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      display: inline-block;
+      margin-bottom: 25px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .question-area {
+      margin-bottom: 30px;
+    }
+
+    #question {
+      font-size: 1.4rem;
+      margin-bottom: 25px;
+      line-height: 1.6;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .option {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option:hover {
+      border-color: var(--primary);
+      background: #f5f7fa;
+      transform: translateX(5px);
+    }
+
+    .option input {
+      margin-right: 12px;
+      transform: scale(1.2);
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+
+    .btn {
+      padding: 14px 30px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3);
+    }
+
+    .btn-secondary {
+      background: #7f8c8d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #6c7a7d;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(108, 122, 125, 0.3);
+    }
+
+    #score {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--secondary);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .subject-card {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .subject-card:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    .subject-card:nth-child(3) {
+      animation-delay: 1s;
+    }
+    .subject-card:nth-child(4) {
+      animation-delay: 1.5s;
+    }
+    .subject-card:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+    .subject-card:nth-child(6) {
+      animation-delay: 1s;
+    }
+    .subject-card:nth-child(7) {
+      animation-delay: 1.5s;
+    }
+    .subject-card:nth-child(8) {
+      animation-delay: 0.5s;
+    }
+
+    @media (max-width: 768px) {
+      .subject-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+      }
+      
+      .quiz-box {
+        padding: 25px;
+      }
+      
+      #question {
+        font-size: 1.2rem;
+      }
+      
+      .subject-card {
+        padding: 20px;
+      }
+      
+      .subject-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-container" id="subjectBg"></div>
+  <div class="bg-container" id="quizBg"></div>
+
+  <div class="container">
+    <h2>Select a Subject</h2>
+    <div class="subject-grid" id="subjectGrid">
+      <div class="subject-card" onclick="startQuiz('English')">
+        <div class="subject-icon">📚</div>
+        <div class="subject-title">English</div>
+        <div class="subject-description">Literature, grammar and writing skills</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('Maths')">
+        <div class="subject-icon">🧮</div>
+        <div class="subject-title">Mathematics</div>
+        <div class="subject-description">Algebra, geometry and calculus</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('History')">
+        <div class="subject-icon">🏛️</div>
+        <div class="subject-title">History</div>
+        <div class="subject-description">World events and civilizations</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('Geography')">
+        <div class="subject-icon">🌍</div>
+        <div class="subject-title">Geography</div>
+        <div class="subject-description">Physical and human geography</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('Economics')">
+        <div class="subject-icon">💹</div>
+        <div class="subject-title">Economics</div>
+        <div class="subject-description">Markets, finance and resources</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('Physics')">
+        <div class="subject-icon">⚛️</div>
+        <div class="subject-title">Physics</div>
+        <div class="subject-description">Forces, energy and matter</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('Biology')">
+        <div class="subject-icon">🧬</div>
+        <div class="subject-title">Biology</div>
+        <div class="subject-description">Living organisms and life processes</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+
+      <div class="subject-card" onclick="startQuiz('Chemistry')">
+        <div class="subject-icon">🧪</div>
+        <div class="subject-title">Chemistry</div>
+        <div class="subject-description">Elements, compounds and reactions</div>
+        <button class="start-btn">Start Quiz</button>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <h2 id="subjectTitle">High School Quiz</h2>
+      <div id="timer">Time Left: 5:00</div>
+      <div class="progress-container">
+        <div id="progressBar"></div>
+      </div>
+
+      <div class="question-area">
+        <p id="question"></p>
+        <div class="options">
+          <label class="option"><input type="radio" name="option" value="A"> <span id="optA"></span></label>
+          <label class="option"><input type="radio" name="option" value="B"> <span id="optB"></span></label>
+          <label class="option"><input type="radio" name="option" value="C"> <span id="optC"></span></label>
+          <label class="option"><input type="radio" name="option" value="D"> <span id="optD"></span></label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-secondary" onclick="goBack()">Back to Subjects</button>
+        <button class="btn btn-primary" onclick="submitAnswer()">Next Question</button>
+      </div>
+      
+      <p id="score"></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    // --- MODIFIED: Added Firebase Auth imports ---
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaNgmMCx0hP1yH2L2fdNEmbtWkWP-OfA",
+      authDomain: "login-sysytem-b86b6.firebaseapp.com",
+      projectId: "login-sysytem-b86b6",
+      storageBucket: "login-sysytem-b86b6.appspot.com",
+      messagingSenderId: "792465172616",
+      appId: "1:792465172616:web:635d75a49b7559eb0a973d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    // --- MODIFIED: Initialize Firebase Auth ---
+    const auth = getAuth(app);
+
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 300; // 5 minutes
+    // --- MODIFIED: Variable to hold the current user's ID ---
+    let currentUserUid = null;
+
+    // --- MODIFIED: Check for user's authentication state ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUid = user.uid;
+        } else {
+            currentUserUid = null;
+            // Optional: You could redirect to a login page if no user is signed in
+            // For example: window.location.href = 'login.html';
+        }
+    });
+
+
+    // Function to change background images
+    function changeBackgrounds(subject) {
+      const subjectBg = document.getElementById('subjectBg');
+      const quizBg = document.getElementById('quizBg');
+      
+      switch(subject) {
+        case 'English':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'Maths':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'History':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1505664194779-8beaceb93744?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'Geography':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'Economics':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'Physics':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'Biology':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        case 'Chemistry':
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+          break;
+        default:
+          quizBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')";
+      }
+    }
+
+    window.startQuiz = async function(subject) {
+      // Change the quiz background based on subject
+      changeBackgrounds(subject);
+      
+      // Animate out subject selection
+      document.getElementById('subjectGrid').classList.add('hidden');
+      document.getElementById('subjectBg').style.opacity = '0';
+      
+      // After animation completes, show quiz
+      setTimeout(() => {
+        document.getElementById('quizBg').style.opacity = '1';
+        document.getElementById('quizBox').style.display = 'block';
+        
+        // Trigger reflow to enable animation
+        void document.getElementById('quizBox').offsetWidth;
+        document.getElementById('quizBox').classList.add('visible');
+      }, 800);
+
+      questions = [];
+      currentIndex = 0;
+      score = 0;
+      timeLeft = 300;
+
+      document.getElementById("subjectTitle").innerText = `High School Quiz: ${subject}`;
+      document.getElementById("score").innerText = '';
+      document.getElementById("progressBar").style.width = '0%';
+
+      const quizCollection = collection(db, "quizzes", "13to18", "subjects", subject, "questions");
+      const querySnapshot = await getDocs(quizCollection);
+      querySnapshot.forEach(doc => questions.push(doc.data()));
+
+      displayQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      const timerElement = document.getElementById("timer");
+      timerElement.innerText = `Time Left: 5:00`;
+
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.innerText = `Time Left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        timeLeft--;
+
+        if (timeLeft < 0) {
+          clearInterval(timer);
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function displayQuestion() {
+      if (currentIndex >= questions.length) {
+        endQuiz();
+        return;
+      }
+
+      const q = questions[currentIndex];
+      document.getElementById("question").innerText = q.question;
+      document.getElementById("optA").innerText = q.optionA;
+      document.getElementById("optB").innerText = q.optionB;
+      document.getElementById("optC").innerText = q.optionC;
+      document.getElementById("optD").innerText = q.optionD;
+      
+      // Clear previous selection
+      document.querySelectorAll('input[name="option"]').forEach(radio => {
+        radio.checked = false;
+      });
+      
+      // Update progress bar
+      document.getElementById("progressBar").style.width = `${(currentIndex / questions.length) * 100}%`;
+    }
+
+    window.submitAnswer = function() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (!selected) {
+        alert("Please select an answer before proceeding!");
+        return;
+      }
+      
+      if (selected.value === questions[currentIndex].answer) {
+        score++;
+      }
+      
+      currentIndex++;
+      displayQuestion();
+    }
+
+    // --- MODIFIED: Updated endQuiz function to save results to the user's collection ---
+    async function endQuiz() {
+      clearInterval(timer);
+      
+      const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+      const questionArea = document.querySelector(".question-area");
+      questionArea.innerHTML = `
+        <h3 style="text-align: center; margin-bottom: 20px; color: var(--primary); font-size: 1.8rem;">Quiz Completed!</h3>
+        <p style="text-align: center; font-size: 1.2rem;">You answered ${score} out of ${questions.length} questions correctly</p>
+      `;
+      
+      document.getElementById("score").innerText = `Final Score: ${percentage}%`;
+      document.querySelector(".button-group").style.display = 'none';
+      document.getElementById("progressBar").style.width = "100%";
+      
+      // Save result only if a user is logged in
+      if (currentUserUid) {
+          const subject = document.getElementById("subjectTitle").innerText.split(": ")[1];
+          const resultsCollectionRef = collection(db, "users", currentUserUid, "results");
+          try {
+              await addDoc(resultsCollectionRef, {
+                  ageGroup: "13-18", // Added for better dashboard filtering
+                  subject: subject,
+                  score: score,
+                  total: questions.length,
+                  percentage: percentage,
+                  timestamp: new Date() // Use Firestore server timestamp for accuracy
+              });
+              console.log("Quiz result for age 13-18 saved successfully!");
+          } catch (error) {
+              console.error("Error saving quiz result:", error);
+          }
+      } else {
+          console.warn("User not logged in, quiz result not saved.");
+      }
+    }
+
+
+    window.goBack = function() {
+      clearInterval(timer);
+      
+      // Animate out quiz
+      document.getElementById('quizBox').classList.remove('visible');
+      document.getElementById('quizBg').style.opacity = '0';
+      
+      // After animation completes, show subject selection
+      setTimeout(() => {
+        document.getElementById('quizBox').style.display = 'none';
+        document.getElementById('subjectGrid').classList.remove('hidden');
+        document.getElementById('subjectBg').style.opacity = '1';
+      }, 800);
+
+      document.querySelector(".button-group").style.display = "flex";
+      document.getElementById("score").innerText = "";
+      document.getElementById("timer").innerText = "Time Left: 5:00";
+      document.getElementById("progressBar").style.width = "0%";
+
+      document.querySelector(".question-area").innerHTML = `
+        <p id="question"></p>
+        <div class="options">
+          <label class="option"><input type="radio" name="option" value="A"> <span id="optA"></span></label>
+          <label class="option"><input type="radio" name="option" value="B"> <span id="optB"></span></label>
+          <label class="option"><input type="radio" name="option" value="C"> <span id="optC"></span></label>
+          <label class="option"><input type="radio" name="option" value="D"> <span id="optD"></span></label>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

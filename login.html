@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster Pro Login</title>
+  <link rel="stylesheet" href="login.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="category.html">Category</a>
+    <a href="plan.html">Plans</a>
+    <a href="index.html#about">About</a>
+  </div>
+
+  <a href="index.html" style="position: fixed; bottom: 20px; left: 20px; background: rgba(255,255,255,0.4); padding: 10px 16px; border-radius: 8px; text-decoration: none; z-index: 1000; color: black; font-weight: bold; backdrop-filter: blur(4px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">
+    ← Back
+  </a>
+
+  <video autoplay muted loop id="bg-video">
+    <source src="assests/login/water.mp4" type="video/mp4" />
+  </video>
+  <div class="green-overlay"></div>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">QuizElite <span>Pro</span></div>
+      <h1>Master Any Subject with Intelligent Learning</h1>
+      <p>Join thousands of learners who have accelerated their knowledge with our powered quiz platform.</p>
+      <ul>
+        <li>✅ Adaptive AI-powered quizzes</li>
+        <li>✅ Real-time performance analytics</li>
+        <li>✅ Personalized learning paths</li>
+        <li>✅ Community challenges & leaderboards</li>
+      </ul>
+    </div>
+
+    <div class="right-panel">
+      <h2>Welcome Back</h2>
+      <p>Sign in to continue your learning journey</p>
+      <form id="login-form">
+        <label>Email Address (ADMIN ACCESS)</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required />
+        <div class="options">
+          <label><input type="checkbox" checked /> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button type="submit">Sign In</button>
+        <div class="or">Sign in (If you are user)</div>
+        <button class="google-btn" type="button" id="google-signin-btn">Continue with Google</button>
+        <p class="signup">Don't have an account? <a href="#">Sign up for free</a></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaNgmMCx0hP1yH2L2fdNEmbtWkWP-OfA",
+      authDomain: "login-sysytem-b86b6.firebaseapp.com",
+      projectId: "login-sysytem-b86b6",
+      storageBucket: "login-sysytem-b86b6.firebasestorage.app",
+      messagingSenderId: "792465172616",
+      appId: "1:792465172616:web:635d75a49b7559eb0a973d",
+      measurementId: "G-FL3L6NH1W0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    document.getElementById("login-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          const name = user.displayName || "Learner";
+          localStorage.setItem("userName", name);
+          localStorage.setItem("userEmail", user.email);
+          alert("Login successful!");
+          window.location.href = "dashboard.html";
+        })
+        .catch(error => {
+          alert("Login failed: " + error.message);
+        });
+    });
+
+    document.getElementById("google-signin-btn").addEventListener("click", function () {
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      auth.signInWithPopup(provider)
+        .then(result => {
+          const user = result.user;
+          const name = user.displayName || "Learner";
+          localStorage.setItem("userName", name);
+          localStorage.setItem("userEmail", user.email);
+          alert(`Welcome, ${name}!`);
+          window.location.href = "dashboard.html";
+        })
+        .catch(error => {
+          alert("Google Sign-In failed: " + error.message);
+        });
+    });
+  </script>
+  
+</body>
+</html>

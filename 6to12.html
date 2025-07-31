@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title> Quiz</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      padding: 20px;
+      transition: background 0.5s ease;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      color: #fff;
+    }
+
+    .subject-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      max-width: 1000px;
+      margin: 50px auto;
+    }
+
+    .subject-card {
+      border-radius: 15px;
+      padding: 20px;
+      width: 220px;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .subject-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));
+    }
+
+    .subject-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+
+    .subject-description {
+      font-weight: 500;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .subject-button {
+      margin-top: auto;
+      padding: 10px 16px;
+      background: linear-gradient(to right, #00c896, #00a8ff);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .subject-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .quiz-box {
+      background: rgba(0, 10, 30, 0.8);
+      color: #ffffff;
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      display: none;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    #progressBarContainer {
+      width: 100%;
+      background-color: rgba(255,255,255,0.1);
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      transition: width 0.4s ease;
+    }
+
+    .question-area {
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .options label {
+      display: block;
+      margin: 10px 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #42e695, #3bb2b8);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      margin-right: 10px;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      background: linear-gradient(45deg, #2fa4a4, #3ed0d0);
+      transform: translateY(-2px);
+    }
+
+    #score {
+      text-align: center;
+      color: #4CAF50;
+      font-size: 1.2rem;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    #stars {
+      text-align: center;
+      font-size: 2rem;
+      animation: pop 0.3s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Select a Subject</h2>
+  <div class="subject-grid">
+    <div class="subject-card" onclick="startQuiz('ComputerScience')">
+      <div class="subject-title">Computer Science</div>
+      <div class="subject-description">
+        Explore programming, algorithms, and technology concepts.
+        Test your knowledge of the digital world.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('English')">
+      <div class="subject-title">English</div>
+      <div class="subject-description">
+        Challenge your grammar, vocabulary, and literature knowledge.
+        Improve your language skills.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Environment')">
+      <div class="subject-title">Environment</div>
+      <div class="subject-description">
+        Learn about ecosystems, conservation, and sustainability.
+        Test your eco-awareness.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('GeneralKnowledge')">
+      <div class="subject-title">General Knowledge</div>
+      <div class="subject-description">
+        Challenge yourself with diverse topics from around the world.
+        Expand your horizons.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('HealthHygiene')">
+      <div class="subject-title">Health & Hygiene</div>
+      <div class="subject-description">
+        Test your knowledge of wellness, nutrition, and self-care.
+        Learn healthy habits.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Maths')">
+      <div class="subject-title">Mathematics</div>
+      <div class="subject-description">
+        Solve problems in algebra, geometry, and more.
+        Sharpen your analytical skills.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('MoralValues')">
+      <div class="subject-title">Moral Values</div>
+      <div class="subject-description">
+        Explore ethics, decision-making, and social responsibility.
+        Reflect on important life lessons.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Science')">
+      <div class="subject-title">Science</div>
+      <div class="subject-description">
+        Discover physics, chemistry, and biology concepts.
+        Feed your scientific curiosity.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('SocialScience')">
+      <div class="subject-title">Social Science</div>
+      <div class="subject-description">
+        Learn about history, geography, and civics.
+        Understand our society better.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+
+    <div class="subject-card" onclick="startQuiz('Sports')">
+      <div class="subject-title">Sports</div>
+      <div class="subject-description">
+        Test your knowledge of games, athletes, and rules.
+        For the sports enthusiast in you.
+      </div>
+      <button class="subject-button">Start</button>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <h2 id="subjectTitle">6-12 Quiz</h2>
+    <p id="timer"></p>
+    <div id="progressBarContainer"><div id="progressBar"></div></div>
+
+    <div class="question-area">
+      <p id="question"></p>
+      <div class="options">
+        <label><input type="radio" name="option" value="A"> <span id="optA"></span></label>
+        <label><input type="radio" name="option" value="B"> <span id="optB"></span></label>
+        <label><input type="radio" name="option" value="C"> <span id="optC"></span></label>
+        <label><input type="radio" name="option" value="D"> <span id="optD"></span></label>
+      </div>
+    </div>
+
+    <button class="btn" onclick="submitAnswer()">Next</button>
+    <button class="btn" onclick="goBack()">Back</button>
+    <p id="score"></p>
+    <div id="stars"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaNgmMCx0hP1yH2L2fdNEmbtWkWP-OfA",
+      authDomain: "login-sysytem-b86b6.firebaseapp.com",
+      projectId: "login-sysytem-b86b6",
+      storageBucket: "login-sysytem-b86b6.appspot.com",
+      messagingSenderId: "792465172616",
+      appId: "1:792465172616:web:635d75a49b7559eb0a973d"
+    };
+
+    const subjectBackgrounds = {
+      'ComputerScience': 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'English': 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Environment': 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'GeneralKnowledge': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'HealthHygiene': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Maths': 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'MoralValues': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Science': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'SocialScience': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+      'Sports': 'https://images.unsplash.com/photo-1543357486-d71456938a1c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const correctSound = new Audio("correct.mp3");
+    const wrongSound = new Audio("wrong.mp3");
+
+    let questions = [], currentIndex = 0, score = 0, timer, timeLeft = 300;
+    let currentUserUid = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUid = user.uid;
+        } else {
+            currentUserUid = null;
+        }
+    });
+
+    window.startQuiz = async function(subject) {
+      questions = [], currentIndex = 0, score = 0, timeLeft = 300;
+
+      document.body.style.background = `url('${subjectBackgrounds[subject]}') no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+
+      document.querySelector(".quiz-box").style.display = "block";
+      document.querySelector(".subject-grid").style.display = "none";
+      document.getElementById("subjectTitle").innerText = `13–18 Quiz: ${subject}`;
+      document.getElementById("score").innerText = '';
+      document.getElementById("progressBar").style.width = '0%';
+
+      const quizRef = collection(db, "quizzes", "13to18", "subjects", subject, "questions");
+      const snapshot = await getDocs(quizRef);
+      snapshot.forEach(doc => questions.push(doc.data()));
+
+      displayQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      const el = document.getElementById("timer");
+      el.innerText = "Time Left: 5:00";
+      timer = setInterval(() => {
+        const min = Math.floor(timeLeft / 60), sec = timeLeft % 60;
+        el.innerText = `Time Left: ${min}:${sec < 10 ? '0' + sec : sec}`;
+        if (--timeLeft < 0) {
+          clearInterval(timer);
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function displayQuestion() {
+      if (currentIndex >= questions.length) return endQuiz();
+      const q = questions[currentIndex];
+      document.getElementById("question").innerText = q.question;
+      document.getElementById("optA").innerText = q.optionA;
+      document.getElementById("optB").innerText = q.optionB;
+      document.getElementById("optC").innerText = q.optionC;
+      document.getElementById("optD").innerText = q.optionD;
+      document.getElementById("progressBar").style.width = `${(currentIndex / questions.length) * 100}%`;
+    }
+
+    window.submitAnswer = function() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (!selected) return alert("Choose an answer!");
+      if (selected.value === questions[currentIndex].answer) {
+        score++;
+        correctSound.play();
+      } else {
+        wrongSound.play();
+      }
+      currentIndex++;
+      selected.checked = false;
+      displayQuestion();
+    }
+
+    async function endQuiz() {
+      clearInterval(timer);
+      document.querySelector(".question-area").innerHTML = `<h3>🎉 Quiz Completed!</h3>`;
+      document.getElementById("score").innerText = `Your Score: ${score}/${questions.length}`;
+      document.querySelector(".btn").style.display = "none";
+      document.getElementById("progressBar").style.width = "100%";
+
+      const stars = document.getElementById("stars");
+      stars.innerHTML = "";
+      for (let i = 0; i < score; i++) {
+        const star = document.createElement("span");
+        star.textContent = "⭐";
+        star.style.animationDelay = `${i * 0.1}s`;
+        stars.appendChild(star);
+      }
+
+      const subject = document.getElementById("subjectTitle").innerText.split(": ")[1];
+      const percentage = Math.round((score / questions.length) * 100);
+
+      if (currentUserUid) {
+          const resultsCollectionRef = collection(db, "users", currentUserUid, "results");
+          try {
+              await addDoc(resultsCollectionRef, {
+                  userId: currentUserUid,
+                  subject: subject,
+                  score: score,
+                  total: questions.length,
+                  percentage: percentage,
+                  timestamp: new Date()
+              });
+              console.log("Quiz result saved successfully!");
+          } catch (error) {
+              console.error("Error saving quiz result:", error);
+          }
+      } else {
+          console.warn("User not logged in, quiz result not saved.");
+      }
+    }
+
+    window.goBack = function() {
+      clearInterval(timer);
+      document.body.style.background = `url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+      
+      document.querySelector(".quiz-box").style.display = "none";
+      document.querySelector(".subject-grid").style.display = "flex";
+      document.querySelector(".btn").style.display = "inline-block";
+      document.getElementById("score").innerText = "";
+      document.getElementById("timer").innerText = "";
+      document.getElementById("progressBar").style.width = "0%";
+
+      document.querySelector(".question-area").innerHTML = `
+        <p id="question"></p>
+        <div class="options">
+          <label><input type="radio" name="option" value="A"> <span id="optA"></span></label>
+          <label><input type="radio" name="option" value="B"> <span id="optB"></span></label>
+          <label><input type="radio" name="option" value="C"> <span id="optC"></span></label>
+          <label><input type="radio" name="option" value="D"> <span id="optD"></span></label>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
